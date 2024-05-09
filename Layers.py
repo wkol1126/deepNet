@@ -1,4 +1,5 @@
 import numpy as np
+from net_functions import softmax, cross_entropy_error
 
 class AddLayer:
     def __init__(self) -> None:
@@ -35,13 +36,14 @@ class Relu:
         self.mask = None
     
     def forward(self, x):
-        self.mask = (x<0)
+        self.mask = ( x<= 0)
         out = x.copy()
-        return out[self.mask] = 0
+        out[self.mask] = 0
+        return out
 
     def backward(self, dout):
         dout[self.mask] = 0
-        dx = dout * 1
+        dx = dout 
         return dx
     
 class Sigmoid:
@@ -71,62 +73,83 @@ class Affine:
         return out
      
      def backward(self, dout):
-         dx = np.dot(dout, np.transpose(self.W))
-         self.dW = np.dot(np.transpose(self.x), dout)
+         dx = np.dot(dout, self.W.T)
+         #dx = np.dot(dout, np.transpose(self.W))
+         self.dW = np.dot(self.x.T, dout)
+         #self.dW = np.dot(np.transpose(self.x), dout)
          self.db = np.sum(dout, axis=0)
+         return dx
+
+class Softmax_with_loss:
+    def __init__(self):
+        self.loss = None
+        self.y = None # predic
+        self.t = None # label
+
+    def forward(self, x, t):
+        self.t = t
+        self.y = softmax(x)
+        self.loss = cross_entropy_error(self.y, self.t)
+        return self.loss
+
+    def backward(self, dout=1):
+        batch_size = self.t.shape[0]
+        dx = (self.y - self.t) / batch_size
+        return dx
 
 
 
-def main1():
-    apple = 100
-    apple_num = 2
-    tax = 1.1
 
-    #layer
-    multi_apple_layer = MultiLayer()
-    multi_tax_layer = MultiLayer()
+# def main1():
+#     apple = 100
+#     apple_num = 2
+#     tax = 1.1
 
-    #forward
-    apple_price = multi_apple_layer.forward(apple, apple_num) 
-    price = multi_tax_layer.forward(apple_price, tax)
+#     #layer
+#     multi_apple_layer = MultiLayer()
+#     multi_tax_layer = MultiLayer()
 
-    #backward
-    dout = 1
-    dapple_price, dtax = multi_tax_layer.backward(dout)
-    dapple, dapple_num = multi_apple_layer.backward(dapple_price)
+#     #forward
+#     apple_price = multi_apple_layer.forward(apple, apple_num) 
+#     price = multi_tax_layer.forward(apple_price, tax)
 
-    print('{},{},{}'.format(dapple, dapple_num, dtax))    
+#     #backward
+#     dout = 1
+#     dapple_price, dtax = multi_tax_layer.backward(dout)
+#     dapple, dapple_num = multi_apple_layer.backward(dapple_price)
 
-def main2():
-    apple_num = 2
-    apple = 100
-    orange_num = 3
-    orange = 150
-    tax = 1.1
+#     print('{},{},{}'.format(dapple, dapple_num, dtax))    
 
-    #layers
-    multi_apple_layer = MultiLayer()
-    multi_orange_layer = MultiLayer()
-    add_apple_orange_layer = AddLayer()
-    multi_tax_layer = MultiLayer()
+# def main2():
+#     apple_num = 2
+#     apple = 100
+#     orange_num = 3
+#     orange = 150
+#     tax = 1.1
 
-    #forward
-    apple_price = multi_apple_layer.forward(apple, apple_num)
-    orange_price = multi_orange_layer.forward(orange, orange_num)
-    apple_orange_price = add_apple_orange_layer.forward(apple_price, orange_price)
-    price_with_tax = multi_tax_layer.forward(apple_orange_price, tax)
+#     #layers
+#     multi_apple_layer = MultiLayer()
+#     multi_orange_layer = MultiLayer()
+#     add_apple_orange_layer = AddLayer()
+#     multi_tax_layer = MultiLayer()
 
-    #backward
-    dout = 1
-    dapple_orange_price, dtax = multi_tax_layer.backward(dout)
-    dapple_price, dorange_price = add_apple_orange_layer.backward(dapple_orange_price)
-    dapple, dapple_num = multi_apple_layer.backward(dapple_price)
-    dorange, dorange_num = multi_orange_layer.backward(dorange_price)
+#     #forward
+#     apple_price = multi_apple_layer.forward(apple, apple_num)
+#     orange_price = multi_orange_layer.forward(orange, orange_num)
+#     apple_orange_price = add_apple_orange_layer.forward(apple_price, orange_price)
+#     price_with_tax = multi_tax_layer.forward(apple_orange_price, tax)
 
-    print('Total proce:', price_with_tax)
-    print(dapple, dapple_num, dorange, dorange_num, dtax)
+#     #backward
+#     dout = 1
+#     dapple_orange_price, dtax = multi_tax_layer.backward(dout)
+#     dapple_price, dorange_price = add_apple_orange_layer.backward(dapple_orange_price)
+#     dapple, dapple_num = multi_apple_layer.backward(dapple_price)
+#     dorange, dorange_num = multi_orange_layer.backward(dorange_price)
+
+#     print('Total proce:', price_with_tax)
+#     print(dapple, dapple_num, dorange, dorange_num, dtax)
 
 
-if __name__ == '__main__':
-    main2()
+# if __name__ == '__main__':
+#     main2()
     
