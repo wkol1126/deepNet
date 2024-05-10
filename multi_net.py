@@ -2,7 +2,7 @@ import numpy as np
 from collections import OrderedDict
 from Layers import *
 # from common.layers import *
-class TwoLayerNet:
+class Multi_LayerNet:
     def __init__(self, input_size, hidden_size, output_size, weight_init_std = 0.01, params=None):
 
         #權重初始化
@@ -13,19 +13,25 @@ class TwoLayerNet:
                             np.random.randn(input_size, hidden_size)
             self.params['b1'] = weight_init_std * \
                             np.random.randn(hidden_size)
-
             self.params['W2'] = weight_init_std * \
-                            np.random.randn(hidden_size, output_size)
+                            np.random.randn(hidden_size, hidden_size)
             self.params['b2'] = weight_init_std * \
+                            np.random.randn(hidden_size)
+            self.params['W3'] = weight_init_std * \
+                            np.random.randn(hidden_size, output_size)
+            self.params['b3'] = weight_init_std * \
                             np.random.randn(output_size)
+            
         else:
             self.params = params    
         
         #產生各層
         self.layers = OrderedDict()
         self.layers['Affine1'] = Affine(self.params['W1'], self.params['b1'])
-        self.layers['Relu'] = Relu()
+        self.layers['Relu1'] = Relu()
         self.layers['Affine2'] = Affine(self.params['W2'], self.params['b2'])
+        self.layers['Relu2'] = Relu()
+        self.layers['Affine3'] = Affine(self.params['W3'], self.params['b3'])
         
         self.last_layer = Softmax_with_loss()
         #self.last_layer = SoftmaxWithLoss()
@@ -67,5 +73,6 @@ class TwoLayerNet:
         grads['b1'] = self.layers['Affine1'].db
         grads['W2'] = self.layers['Affine2'].dW
         grads['b2'] = self.layers['Affine2'].db   
-
+        grads['W3'] = self.layers['Affine3'].dW
+        grads['b3'] = self.layers['Affine3'].db 
         return grads

@@ -2,6 +2,7 @@ from sklearn.datasets import fetch_openml
 from net_functions import mnist_one_hot_coding
 from sklearn.model_selection import train_test_split
 from simple_net import TwoLayerNet
+from multi_net import Multi_LayerNet
 import numpy as np
 import pandas as pd
 from dataset.mnist import load_mnist
@@ -18,18 +19,21 @@ X_train, X_test, y_train, y_test = train_test_split(X, y_ohc, train_size=0.8, ra
 
 # 參數設定
 iter_num = 10000
+batch_size = 100
 input_size = X_train.shape[1]
+
 hidden_size = 50
 output_size = y_train.shape[1]
 train_size = X_train.shape[0]
 batch_size = 50
 learning_rate =0.1
-weight_init = 1/np.sqrt(input_size)
+weight_init = 2/np.sqrt(input_size)
 train_loss = []
 train_acc = []
 test_acc = []
 iter_per_epoch = max(train_size/batch_size, 1)
-model = TwoLayerNet(input_size, hidden_size, output_size,weight_init)
+# model = TwoLayerNet(input_size, hidden_size, output_size,weight_init)
+model = Multi_LayerNet(input_size, hidden_size, output_size,weight_init)
 epoch = 0
 print('----Network information-----')
 print('Data shape', X_train.shape, y_train.shape)
@@ -62,5 +66,12 @@ for i in range(iter_num):
         test_acc.append(model.acuuracy(X_test, y_test))
         print('loss = ',train_loss[i])
         print('tran_acc =',train_acc[epoch-1], 'test_acc=', test_acc[epoch-1])     
-plt.plot(train_loss)        
-plt.show()
+#plt.plot(train_loss)        
+#plt.show()
+
+#save weight parameter
+
+import pickle
+with open('weight.pkl', 'wb') as f:
+    pickle.dump(model.params, f)
+

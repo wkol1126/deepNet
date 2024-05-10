@@ -83,7 +83,7 @@ class Affine:
 class Softmax_with_loss:
     def __init__(self):
         self.loss = None
-        self.y = None # predic
+        self.y = None # predict
         self.t = None # label
 
     def forward(self, x, t):
