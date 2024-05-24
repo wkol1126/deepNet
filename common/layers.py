@@ -264,7 +264,7 @@ class Pooling:
         arg_max = np.argmax(col, axis=1)
         out = np.max(col, axis=1)
         out = out.reshape(N, out_h, out_w, C).transpose(0, 3, 1, 2)
-
+        
         self.x = x
         self.arg_max = arg_max
 

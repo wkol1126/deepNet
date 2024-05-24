@@ -32,5 +32,5 @@ model.predict(img)
 t = np.array([[0,1,0,0,0,0,0,0,0,0]])
 model.loss(img, t)
 #-------------------------------------
-print(f'Predict : {(model.last_layer.y)}')
+print(f'Predict : {np.argmax(model.last_layer.y)}')
 # print('label :', y[i])
